@@ -15,8 +15,7 @@ export default {
   },
   methods: {
     init() {
-      this.twoSum_0([2, 7, 11, 15], 9);
-      this.twoSum_1([2, 7, 11, 15], 9);
+      this.twoSum([2, 7, 11, 15], 9);
     },
     /* 两数之和 */
     /**
@@ -24,7 +23,7 @@ export default {
      * @param {number} target
      * @return {number[]}
      */
-    twoSum_0(nums, target) {
+    twoSum(nums, target) {
       for (let i = 0; i < nums.length; i++) {
         if (i < nums.length + 1) {
           for (let j = i + 1; j < nums.length; j++) {
