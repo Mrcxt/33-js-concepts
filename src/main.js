@@ -6,6 +6,7 @@ import "./registerServiceWorker";
 import ElementUI from "element-ui";
 
 /* css */
+import "./style/reset.less";
 import "normalize.css";
 import "element-ui/lib/theme-chalk/index.css";
 
