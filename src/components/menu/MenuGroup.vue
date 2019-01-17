@@ -35,5 +35,9 @@ export default {
 </script>
 
 
-<style lang="less">
+<style lang="less" scoped>
+.el-menu {
+  min-height: 100%;
+}
 </style>
+

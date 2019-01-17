@@ -30,7 +30,7 @@ export default {
   }
 };
 </script>
-<style lang="less">
+<style lang="less" scoped>
 #app {
   display: flex;
   width: 100vw;
@@ -41,3 +41,4 @@ export default {
   -moz-osx-font-smoothing: grayscale;
 }
 </style>
+
