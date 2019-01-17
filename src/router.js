@@ -9,6 +9,11 @@ export default new Router({
       path: "/",
       name: "leetCode",
       component: () => import("./views/leetCode.vue")
+    },
+    {
+      path: "/calcCircularLayout",
+      name: "calcCircularLayout",
+      component: () => import("./views/calcCircularLayout.vue")
     }
   ]
 });
