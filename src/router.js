@@ -8,12 +8,18 @@ export default new Router({
     {
       path: "/",
       name: "leetCode",
-      component: () => import("./views/leetCode.vue")
+      component: () => import("./views/leetCode/leetCode.vue")
     },
     {
       path: "/calcCircularLayout",
-      name: "calcCircularLayout",
-      component: () => import("./views/calcCircularLayout.vue")
+      name: "随机坐标点",
+      component: () =>
+        import("./views/calcCircularLayout/calcCircularLayout.vue")
+    },
+    {
+      path: "/IM",
+      name: "虾哔哔",
+      component: () => import("./views/IM/IM.vue")
     }
   ]
 });
