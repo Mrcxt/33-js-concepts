@@ -11,35 +11,49 @@
     </div>
     <div class="im_content">
       <div class="im_content-groups">
-        <template v-for="item in 10">
-          <!-- 0 -->
-          <div class="im_content-msgs" rule="0">
-            <div class="im_content-msgs-time">09:00</div>
-            <div class="im_content-msgs-main">
-              <i class="im_icon el-icon-picture"></i>
-              <div class="im_content-msgs-msg">
-                <span>床前明月光，疑是地上霜。 </span>
+        <div>
+          <template v-for="item in 10">
+            <!-- 0 -->
+            <div class="im_content-msgs" rule="0">
+              <div class="im_content-msgs-time">09:00</div>
+              <div class="im_content-msgs-main">
+                <i class="im_icon el-icon-picture"></i>
+                <div class="im_content-msgs-msg">
+                  <span>床前明月光，疑是地上霜。 </span>
+                </div>
               </div>
             </div>
-          </div>
-          <!-- 1 -->
-          <div class="im_content-msgs" rule="1">
-            <div class="im_content-msgs-time">18:00</div>
-            <div class="im_content-msgs-main">
-              <i class="im_icon el-icon-picture"></i>
-              <div class="im_content-msgs-msg">
-                <span>床前明月光，疑是地上霜。 举头望明月，低头思故乡。举头望明月，低头思故乡。举头望明月，低头思故乡。</span>
+            <!-- 1 -->
+            <div class="im_content-msgs" rule="1">
+              <div class="im_content-msgs-time">18:00</div>
+              <div class="im_content-msgs-main">
+                <i class="im_icon el-icon-picture"></i>
+                <div class="im_content-msgs-msg">
+                  <span>床前明月光，疑是地上霜。 举头望明月，低头思故乡。举头望明月，低头思故乡。举头望明月，低头思故乡。</span>
+                </div>
               </div>
             </div>
-          </div>
-        </template>
+          </template>
+          <!--  -->
+          <template v-for="(item, index) in msg_list">
+            <div class="im_content-msgs" rule="0">
+              <div class="im_content-msgs-time">{{item.msg_list_time}}</div>
+              <div class="im_content-msgs-main">
+                <i class="im_icon el-icon-picture"></i>
+                <div class="im_content-msgs-msg">
+                  <span>{{item.msg_list_msg}} </span>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
       </div>
     </div>
     <div class="im_inputbox">
-      <textarea class="im_inputbox-input" autocomplete="off" placeholder="请输入您想问的问题..."></textarea>
+      <textarea class="im_inputbox-textarea" v-model.trim="input_msg" @keyup.enter="sendMsg" autocomplete="off" placeholder="请输入您想问的问题..."></textarea>
       <div class="im_inputbox-tools">
         <i class="im_icon el-icon-service"></i>
-        <el-button type="primary">发送</el-button>
+        <el-button type="primary" @click="sendMsg">发送</el-button>
       </div>
     </div>
   </div>
@@ -47,7 +61,26 @@
 
 <script>
 export default {
-  name: "IM"
+  name: "IM",
+  data() {
+    return {
+      msg_list: [],
+      input_msg: ""
+    };
+  },
+  created() {},
+  methods: {
+    sendMsg() {
+      if (this.input_msg != "") {
+        this.msg_list.push({
+          msg_list_time: new Date(),
+          msg_list_msg: this.input_msg
+        });
+        this.input_msg = "";
+        console.log(this.input_msg);
+      }
+    }
+  }
 };
 </script>
 
@@ -65,10 +98,13 @@ export default {
 
 /* less */
 .IM {
+  display: flex;
   overflow: hidden;
+  flex-direction: column;
   box-sizing: border-box;
-  width: 320px;
-  height: 480px;
+  margin: 0 auto;
+  width: 350px;
+  height: 530px;
   border: 1px solid #eee;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   color: @rule_color;
@@ -95,6 +131,7 @@ export default {
   .im_header {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
     justify-content: space-between;
     padding: 0 15px;
     height: 50px;
@@ -105,11 +142,12 @@ export default {
   .im_content {
     display: flex;
     padding: 10px 0;
-    height: 340px;
     background-color: #f5f5f5;
     .im_content-groups {
+      display: flex;
       overflow: scroll;
       flex: auto;
+      flex-direction: column-reverse;
       padding: 0 15px;
 
       /* 信息条样式--通用设置 */
@@ -125,8 +163,10 @@ export default {
           display: flex;
           align-items: flex-end;
           .im_icon {
-            // width: 30px;
-            // height: 30px;
+            width: 30px;
+            height: 30px;
+            border-radius: 100%;
+            font-size: 30px;
           }
           .im_content-msgs-msg {
             flex: auto;
@@ -147,6 +187,7 @@ export default {
             }
             .im_content-msgs-msg {
               margin-right: 10px;
+              margin-left: 40px;
               border-bottom-right-radius: 5px;
               background-color: @base_color;
               color: #fff;
@@ -161,6 +202,7 @@ export default {
             .im_icon {
             }
             .im_content-msgs-msg {
+              margin-right: 40px;
               margin-left: 10px;
               border-bottom-left-radius: 5px;
             }
@@ -173,8 +215,9 @@ export default {
   .im_inputbox {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
     height: 90px;
-    .im_inputbox-input {
+    .im_inputbox-textarea {
       display: block;
       flex: auto;
       padding: 5px 15px;
