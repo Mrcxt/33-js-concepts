@@ -46,22 +46,22 @@ export default {
     return {
       Socket: null,
       msg_list: [
-        {
-          msg: "",
-          sid: "",
-          isUseClick: false, //是否点击了有用没用
-          q_list: [],
-          q_list_std: [],
-          log: {
-            user_type: 1, //用户类型,0为访客，1为bot，2为座席
-            msg_type: 0, //消息类型,0为文本，1为其他
-            channel: 0, //渠道,0为API，1为web
-            msg_time: "2018-06-25 16:00",
-            ori_question: "",
-            std_question: "",
-            confidence: 0
-          }
-        }
+        // {
+        //   msg: "",
+        //   sid: "",
+        //   isUseClick: false, //是否点击了有用没用
+        //   q_list: [],
+        //   q_list_std: [],
+        //   log: {
+        //     user_type: 1, //用户类型,0为访客，1为bot，2为座席
+        //     msg_type: 0, //消息类型,0为文本，1为其他
+        //     channel: 0, //渠道,0为API，1为web
+        //     msg_time: "2018-06-25 16:00",
+        //     ori_question: "",
+        //     std_question: "",
+        //     confidence: 0
+        //   }
+        // }
       ],
       input_msg: ""
     };
@@ -83,25 +83,22 @@ export default {
       this.Socket = new WebSocket(url);
       //
       this.Socket.onopen = res => {
-        console.log(res);
         this.wsOnOpen(res);
       };
       this.Socket.onmessage = res => {
-        console.log(res);
         this.wsOnMessage(res);
       };
       this.Socket.onerror = err => {
-        console.log(err);
         this.wsOnError(err);
       };
       this.Socket.onclose = res => {
-        console.log(res);
         this.wsOnClose(res);
       };
     },
 
     /* 事件 */
     wsOnOpen(res) {
+      console.log(res);
       this.msg_list.push({
         type: "tips",
         msg: "机器人上线了"
@@ -109,6 +106,7 @@ export default {
       this.scrollToBottom();
     },
     wsOnMessage(res) {
+      console.log(res);
       let data = JSON.parse(res.data);
       this.msg_list.push(data);
       this.scrollToBottom();
@@ -136,7 +134,6 @@ export default {
           }
         });
         this.input_msg = "";
-        console.log(this.input_msg);
         this.scrollToBottom();
       }
     },
