@@ -12,6 +12,7 @@
     <div class="im_content">
       <div class="im_content-groups" ref="ref_scroll">
         <ul>
+          <!--  -->
           <template v-for="(item, index) in msg_list">
             <li class="im_content-tips" v-if="item.type&&item.type === 'tips'"><span>{{item.msg}}</span></li>
             <li class="im_content-msgs" v-else :rule="item.log.user_type">
@@ -24,6 +25,7 @@
               </div>
             </li>
           </template>
+          <!--  -->
         </ul>
       </div>
     </div>
@@ -36,11 +38,175 @@
     </div>
   </div>
 </template>
+
 <script>
-console.log("object");
-</script>
-<script>
-console.log("object");
+export default {
+  name: "IM",
+  data() {
+    return {
+      Socket: null,
+      msg_list: [
+        {
+          msg: "",
+          sid: "",
+          isUseClick: false, //是否点击了有用没用
+          q_list: [],
+          q_list_std: [],
+          log: {
+            user_type: 1, //用户类型,0为访客，1为bot，2为座席
+            msg_type: 0, //消息类型,0为文本，1为其他
+            channel: 0, //渠道,0为API，1为web
+            msg_time: "2018-06-25 16:00",
+            ori_question: "",
+            std_question: "",
+            confidence: 0
+          }
+        }
+      ],
+      input_msg: ""
+    };
+  },
+  created() {
+    this.initSocket();
+  },
+  watch: {},
+  methods: {
+    initSocket() {
+      let parmas = {
+        sid: this.UUID(),
+        botid: "501f522a99184b789b8e81d504380860",
+        debugmode: "on"
+      };
+      let url = `ws://192.168.179.215/ws?sid=${parmas.sid}&botid=${
+        parmas.botid
+      }&debugmode=${parmas.debugmode}`;
+      this.Socket = new WebSocket(url);
+      //
+      this.Socket.onopen = res => {
+        console.log(res);
+        this.wsOnOpen(res);
+      };
+      this.Socket.onmessage = res => {
+        console.log(res);
+        this.wsOnMessage(res);
+      };
+      this.Socket.onerror = err => {
+        console.log(err);
+        this.wsOnError(err);
+      };
+      this.Socket.onclose = res => {
+        console.log(res);
+        this.wsOnClose(res);
+      };
+    },
+
+    /* 事件 */
+    wsOnOpen(res) {
+      this.msg_list.push({
+        type: "tips",
+        msg: "机器人上线了"
+      });
+      this.scrollToBottom();
+    },
+    wsOnMessage(res) {
+      let data = JSON.parse(res.data);
+      this.msg_list.push(data);
+      this.scrollToBottom();
+    },
+    wsOnError(err) {},
+    wsOnClose(res) {
+      this.msg_list.push({
+        type: "tips",
+        msg: "机器人下线了"
+      });
+      this.scrollToBottom();
+    },
+
+    /* 方法 */
+    wsSend() {
+      if (this.input_msg != "") {
+        this.Socket.send(this.input_msg);
+        let time = this.$days().format("YYYY-MM-DD HH-mm-ss");
+        this.msg_list.push({
+          msg: this.input_msg,
+          log: {
+            user_type: 0, //用户类型,0为访客，1为bot，2为座席
+            msg_type: 0, //消息类型,0为文本，1为其他
+            msg_time: time
+          }
+        });
+        this.input_msg = "";
+        console.log(this.input_msg);
+        this.scrollToBottom();
+      }
+    },
+    /* tool */
+    /**
+     * generateUUID 生成UUID
+     * @returns {string} 返回字符串
+     */
+    UUID() {
+      var d = new Date().getTime();
+      var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+        /[xy]/g,
+        function(c) {
+          var r = (d + Math.random() * 16) % 16 | 0;
+          d = Math.floor(d / 16);
+          return (c == "x" ? r : (r & 0x7) | 0x8).toString(16);
+        }
+      );
+      return uuid;
+    },
+    //
+    handleScroll() {
+      this.gotop = window.pageYOffset >= this.height;
+    },
+    //
+    scrollTop(el, from = 0, to, duration = 500) {
+      if (!window.requestAnimationFrame) {
+        window.requestAnimationFrame =
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame ||
+          window.msRequestAnimationFrame ||
+          function(callback) {
+            return window.setTimeout(callback, 1000 / 60);
+          };
+      }
+      const difference = Math.abs(from - to);
+      const step = Math.ceil((difference / duration) * 50);
+
+      function scroll(start, end, step) {
+        if (start === end) return;
+
+        let d = start + step > end ? end : start + step;
+        if (start > end) {
+          d = start - step < end ? end : start - step;
+        }
+
+        if (el === window) {
+          window.scrollTo(d, d);
+        } else {
+          el.scrollTop = d;
+        }
+        window.requestAnimationFrame(() => scroll(d, end, step));
+      }
+      scroll(from, to, step);
+    },
+    //
+    scrollToBottom() {
+      let ref_scroll = this.$refs.ref_scroll;
+      if (ref_scroll.scrollTop != ref_scroll.scrollHeight) {
+        // ref_scroll.scrollTop = ref_scroll.scrollHeight;
+        this.scrollTop(
+          this.$refs.ref_scroll,
+          ref_scroll.scrollTop,
+          ref_scroll.scrollHeight,
+          1300
+        );
+      }
+    }
+  }
+};
 </script>
 
 <style lang="less" scoped>
