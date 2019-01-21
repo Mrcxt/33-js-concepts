@@ -10,87 +10,37 @@
       </div>
     </div>
     <div class="im_content">
-      <div class="im_content-groups">
-        <div>
-          <template v-for="item in 10">
-            <!-- 0 -->
-            <div class="im_content-msgs" rule="0">
-              <div class="im_content-msgs-time">09:00</div>
-              <div class="im_content-msgs-main">
-                <i class="im_icon el-icon-picture"></i>
-                <div class="im_content-msgs-msg">
-                  <span>床前明月光，疑是地上霜。 </span>
-                </div>
-              </div>
-            </div>
-            <!-- 1 -->
-            <div class="im_content-msgs" rule="1">
-              <div class="im_content-msgs-time">18:00</div>
-              <div class="im_content-msgs-main">
-                <i class="im_icon el-icon-picture"></i>
-                <div class="im_content-msgs-msg">
-                  <span>床前明月光，疑是地上霜。 举头望明月，低头思故乡。举头望明月，低头思故乡。举头望明月，低头思故乡。</span>
-                </div>
-              </div>
-            </div>
-          </template>
-          <!--  -->
+      <div class="im_content-groups" ref="ref_scroll">
+        <ul>
           <template v-for="(item, index) in msg_list">
-            <div class="im_content-msgs" rule="0">
-              <div class="im_content-msgs-time">{{item.msg_list_time}}</div>
+            <li class="im_content-tips" v-if="item.type&&item.type === 'tips'"><span>{{item.msg}}</span></li>
+            <li class="im_content-msgs" v-else :rule="item.log.user_type">
+              <div class="im_content-msgs-time">{{item.log.msg_time}}</div>
               <div class="im_content-msgs-main">
                 <i class="im_icon el-icon-picture"></i>
                 <div class="im_content-msgs-msg">
-                  <span>{{item.msg_list_msg}} </span>
+                  <span v-html="item.msg"> </span>
                 </div>
               </div>
-            </div>
+            </li>
           </template>
-        </div>
+        </ul>
       </div>
     </div>
     <div class="im_inputbox">
-      <textarea class="im_inputbox-textarea" v-model.trim="input_msg" @keyup.enter="sendMsg" autocomplete="off" placeholder="请输入您想问的问题..."></textarea>
+      <textarea class="im_inputbox-textarea" v-model.trim="input_msg" @keyup.enter="wsSend" autocomplete="off" placeholder="请输入您想问的问题..."></textarea>
       <div class="im_inputbox-tools">
         <i class="im_icon el-icon-service"></i>
-        <el-button type="primary" @click="sendMsg">发送</el-button>
+        <el-button type="primary" @click="wsSend">发送</el-button>
       </div>
     </div>
   </div>
 </template>
-
 <script>
-export default {
-  name: "IM",
-  data() {
-    return {
-      Socket: null,
-      msg_list: [],
-      input_msg: ""
-    };
-  },
-  created() {
-    this.initSocket();
-  },
-  methods: {
-    initSocket() {
-      this.Socket = new WebSocket(
-        "ws://192.168.179.215/ws?sid=dc6a4002-9334-4824-879c-8e8c9a4322d3&botid=501f522a99184b789b8e81d504380860&debugmode=on"
-      );
-      console.log(this.Socket.readyState);
-    },
-    sendMsg() {
-      if (this.input_msg != "") {
-        this.msg_list.push({
-          msg_list_time: new Date(),
-          msg_list_msg: this.input_msg
-        });
-        this.input_msg = "";
-        console.log(this.input_msg);
-      }
-    }
-  }
-};
+console.log("object");
+</script>
+<script>
+console.log("object");
 </script>
 
 <style lang="less" scoped>
@@ -151,6 +101,7 @@ export default {
   .im_content {
     display: flex;
     // padding: 10px 0;
+    flex: auto;
     background-color: #f5f5f5;
     .im_content-groups {
       display: flex;
@@ -159,61 +110,76 @@ export default {
       flex-direction: column-reverse;
       padding: 0 15px;
 
-      /* 信息条样式--通用设置 */
-      .im_content-msgs {
-        margin: 25px 0;
-        .im_content-msgs-time {
-          margin: 10px 0;
-          color: @minor_color;
+      ul {
+        margin: 0;
+        padding: 0;
+        /* 信息条样式--通用设置 */
+        .im_content-tips {
+          margin: 25px 0;
           text-align: center;
-          font-size: 12px;
-        }
-        .im_content-msgs-main {
-          display: flex;
-          align-items: flex-end;
-          .im_icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 100%;
-            font-size: 30px;
-          }
-          .im_content-msgs-msg {
-            flex: auto;
-            padding: 15px;
-            border-radius: 15px;
-            background-color: #fff;
-            font-size: 13px;
-            line-height: 1.5;
+          span {
+            color: @placeholder_color;
+            font-size: 12px;
           }
         }
-        //
-        &[rule="0"] {
+        .im_content-msgs {
+          margin: 25px 0;
           .im_content-msgs-time {
+            margin: 10px 0;
+            color: @minor_color;
+            text-align: center;
+            font-size: 12px;
           }
           .im_content-msgs-main {
-            flex-direction: row-reverse;
+            display: flex;
+            align-items: flex-end;
             .im_icon {
+              width: 30px;
+              height: 30px;
+              border-radius: 100%;
+              font-size: 30px;
             }
             .im_content-msgs-msg {
-              margin-right: 10px;
-              margin-left: 40px;
-              border-bottom-right-radius: 5px;
-              background-color: @base_color;
-              color: #fff;
+              flex: auto;
+              flex-grow: 0;
+              flex-shrink: 1;
+              padding: 10px 15px;
+              border-radius: 15px;
+              background-color: #fff;
+              word-break: break-all;
+              font-size: 13px;
+              line-height: 1.5;
             }
           }
-        }
-        //
-        &[rule="1"] {
-          .im_content-msgs-time {
-          }
-          .im_content-msgs-main {
-            .im_icon {
+          //
+          &[rule="0"] {
+            .im_content-msgs-time {
             }
-            .im_content-msgs-msg {
-              margin-right: 40px;
-              margin-left: 10px;
-              border-bottom-left-radius: 5px;
+            .im_content-msgs-main {
+              flex-direction: row-reverse;
+              .im_icon {
+              }
+              .im_content-msgs-msg {
+                margin-right: 10px;
+                margin-left: 40px;
+                border-bottom-right-radius: 5px;
+                background-color: @base_color;
+                color: #fff;
+              }
+            }
+          }
+          //
+          &[rule="1"] {
+            .im_content-msgs-time {
+            }
+            .im_content-msgs-main {
+              .im_icon {
+              }
+              .im_content-msgs-msg {
+                margin-right: 40px;
+                margin-left: 10px;
+                border-bottom-left-radius: 5px;
+              }
             }
           }
         }
