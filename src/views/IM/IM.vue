@@ -64,12 +64,21 @@ export default {
   name: "IM",
   data() {
     return {
+      Socket: null,
       msg_list: [],
       input_msg: ""
     };
   },
-  created() {},
+  created() {
+    this.initSocket();
+  },
   methods: {
+    initSocket() {
+      this.Socket = new WebSocket(
+        "ws://192.168.179.215/ws?sid=dc6a4002-9334-4824-879c-8e8c9a4322d3&botid=501f522a99184b789b8e81d504380860&debugmode=on"
+      );
+      console.log(this.Socket.readyState);
+    },
     sendMsg() {
       if (this.input_msg != "") {
         this.msg_list.push({
@@ -141,7 +150,7 @@ export default {
   // content
   .im_content {
     display: flex;
-    padding: 10px 0;
+    // padding: 10px 0;
     background-color: #f5f5f5;
     .im_content-groups {
       display: flex;
