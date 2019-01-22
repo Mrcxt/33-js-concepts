@@ -2,4 +2,4 @@
 
 ## demo
 
-[DEMO](https://mrcxt.github.io/33-js-concepts/dist)
+[DEMO](https://mrcxt.github.io/33-js-concepts/index.html)
