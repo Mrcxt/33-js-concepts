@@ -30,12 +30,18 @@
             <!--  -->
           </ul>
         </div>
+        <!--  -->
+        <div class="im_content-tags">
+          <div class="im_content-tags-box">
+            <el-button v-for="(item, index) in 10" :key="index" round>测试啊</el-button>
+          </div>
+        </div>
       </div>
       <div class="im_inputbox">
         <textarea class="im_inputbox-textarea" v-model.trim="input_msg" @keyup.enter="wsSend" autocomplete="off" placeholder="请输入您想问的问题..."></textarea>
         <div class="im_inputbox-tools">
           <i class="im_icon el-icon-service"></i>
-          <el-button type="primary" @click="wsSend">发送</el-button>
+          <el-button type="primary" @click="wsSend" round>发送</el-button>
         </div>
       </div>
     </div>
@@ -70,7 +76,7 @@ export default {
     };
   },
   created() {
-    this.initSocket();
+    // this.initSocket();
   },
   watch: {
     msg_list() {
@@ -275,8 +281,9 @@ export default {
   // content
   .im_content {
     display: flex;
-    // padding: 10px 0;
     flex: auto;
+    // padding: 10px 0;
+    flex-direction: column;
     background-color: #f5f5f5;
     .im_content-groups {
       display: flex;
@@ -356,6 +363,19 @@ export default {
               }
             }
           }
+        }
+      }
+    }
+    .im_content-tags {
+      flex-shrink: 0;
+      padding: 5px 10px;
+      width: 100%;
+      .im_content-tags-box {
+        display: flex;
+        overflow-x: scroll;
+        &::-webkit-scrollbar {
+          display: none;
+          width: 0;
         }
       }
     }
