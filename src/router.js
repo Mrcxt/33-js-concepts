@@ -20,6 +20,11 @@ export default new Router({
       path: "/IM",
       name: "虾哔哔",
       component: () => import("./views/IM/IM.vue")
+    },
+    {
+      path: "/customCss",
+      name: "customCss",
+      component: () => import("./views/customCss/customCss.vue")
     }
   ]
 });

@@ -69,7 +69,11 @@ export default {
   created() {
     this.initSocket();
   },
-  watch: {},
+  watch: {
+    msg_list() {
+      this.scrollToBottom();
+    }
+  },
   methods: {
     initSocket() {
       let parmas = {
@@ -103,13 +107,13 @@ export default {
         type: "tips",
         msg: "机器人上线了"
       });
-      this.scrollToBottom();
+      // this.scrollToBottom();
     },
     wsOnMessage(res) {
       console.log(res);
       let data = JSON.parse(res.data);
       this.msg_list.push(data);
-      this.scrollToBottom();
+      // this.scrollToBottom();
     },
     wsOnError(err) {},
     wsOnClose(res) {
@@ -117,7 +121,7 @@ export default {
         type: "tips",
         msg: "机器人下线了"
       });
-      this.scrollToBottom();
+      // this.scrollToBottom();
     },
 
     /* 方法 */
@@ -134,7 +138,7 @@ export default {
           }
         });
         this.input_msg = "";
-        this.scrollToBottom();
+        // this.scrollToBottom();
       }
     },
     /* tool */
@@ -154,7 +158,10 @@ export default {
       );
       return uuid;
     },
-    //
+    /*=============================================
+    =            平缓下拉动画            =
+    =============================================*/
+
     handleScroll() {
       this.gotop = window.pageYOffset >= this.height;
     },
@@ -202,6 +209,8 @@ export default {
         );
       }
     }
+
+    /*=====  End of 平缓下拉动画  ======*/
   }
 };
 </script>
@@ -270,7 +279,6 @@ export default {
       display: flex;
       overflow: scroll;
       flex: auto;
-      flex-direction: column-reverse;
       padding: 0 15px;
 
       ul {
