@@ -1,6 +1,7 @@
 <template>
   <div class="customCss" ref="ref_customCss">
     <h2>自定义css变量</h2>
+    <p>首先通过 CSS 的自定义变量将字号和颜色进行预设，然后通过 setProperty() 方法改变变量值，即可实现在线换肤等功能</p>
     <el-form label-width="100px">
       <el-form-item label="字体颜色：">
         <el-color-picker v-model="form.color"></el-color-picker>
