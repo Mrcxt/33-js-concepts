@@ -48,12 +48,12 @@ self.__precacheManifest = [
     "url": "js/chunk-267d5342.64271e22.js"
   },
   {
-    "revision": "6f0a76321d30f3c8120915e57f7bd77e",
-    "url": "fonts/element-icons.6f0a7632.ttf"
-  },
-  {
     "revision": "2fad952a20fbbcfd1bf2ebb210dccf7a",
     "url": "fonts/element-icons.2fad952a.woff"
+  },
+  {
+    "revision": "6f0a76321d30f3c8120915e57f7bd77e",
+    "url": "fonts/element-icons.6f0a7632.ttf"
   },
   {
     "revision": "af7ae505a9eed503f8b8e6982036873e",
@@ -68,12 +68,12 @@ self.__precacheManifest = [
     "url": "fonts/fontawesome-webfont.b06871f2.ttf"
   },
   {
-    "revision": "912ec66d7572ff821749319396470bde",
-    "url": "img/fontawesome-webfont.912ec66d.svg"
-  },
-  {
     "revision": "674f50d287a8c48dc19ba404d20fe713",
     "url": "fonts/fontawesome-webfont.674f50d2.eot"
+  },
+  {
+    "revision": "912ec66d7572ff821749319396470bde",
+    "url": "img/fontawesome-webfont.912ec66d.svg"
   },
   {
     "revision": "539afb0480f616f2a7b4bf2890c170a7",
