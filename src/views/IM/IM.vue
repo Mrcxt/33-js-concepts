@@ -1,39 +1,42 @@
 <template>
-  <div class="IM">
-    <div class="im_header">
-      <div class="im_header-name">
-        <span>虾哔哔</span>
+  <div class="IM-demo">
+    <p>在线聊天室 -- “虾哔哔”。通过 websocket 实现的简易聊天室。</p>
+    <div class="IM">
+      <div class="im_header">
+        <div class="im_header-name">
+          <span>虾哔哔</span>
+        </div>
+        <div class="im_header-right">
+          <i class="im_icon el-icon-minus"></i>
+          <i class="im_icon el-icon-close"></i>
+        </div>
       </div>
-      <div class="im_header-right">
-        <i class="im_icon el-icon-minus"></i>
-        <i class="im_icon el-icon-close"></i>
-      </div>
-    </div>
-    <div class="im_content">
-      <div class="im_content-groups" ref="ref_scroll">
-        <ul>
-          <!--  -->
-          <template v-for="(item, index) in msg_list">
-            <li class="im_content-tips" v-if="item.type&&item.type === 'tips'"><span>{{item.msg}}</span></li>
-            <li class="im_content-msgs" v-else :rule="item.log.user_type">
-              <div class="im_content-msgs-time">{{item.log.msg_time}}</div>
-              <div class="im_content-msgs-main">
-                <i class="im_icon el-icon-picture"></i>
-                <div class="im_content-msgs-msg">
-                  <span v-html="item.msg"> </span>
+      <div class="im_content">
+        <div class="im_content-groups" ref="ref_scroll">
+          <ul>
+            <!--  -->
+            <template v-for="(item, index) in msg_list">
+              <li class="im_content-tips" v-if="item.type&&item.type === 'tips'"><span>{{item.msg}}</span></li>
+              <li class="im_content-msgs" v-else :rule="item.log.user_type">
+                <div class="im_content-msgs-time">{{item.log.msg_time}}</div>
+                <div class="im_content-msgs-main">
+                  <i class="im_icon el-icon-picture"></i>
+                  <div class="im_content-msgs-msg">
+                    <span v-html="item.msg"> </span>
+                  </div>
                 </div>
-              </div>
-            </li>
-          </template>
-          <!--  -->
-        </ul>
+              </li>
+            </template>
+            <!--  -->
+          </ul>
+        </div>
       </div>
-    </div>
-    <div class="im_inputbox">
-      <textarea class="im_inputbox-textarea" v-model.trim="input_msg" @keyup.enter="wsSend" autocomplete="off" placeholder="请输入您想问的问题..."></textarea>
-      <div class="im_inputbox-tools">
-        <i class="im_icon el-icon-service"></i>
-        <el-button type="primary" @click="wsSend">发送</el-button>
+      <div class="im_inputbox">
+        <textarea class="im_inputbox-textarea" v-model.trim="input_msg" @keyup.enter="wsSend" autocomplete="off" placeholder="请输入您想问的问题..."></textarea>
+        <div class="im_inputbox-tools">
+          <i class="im_icon el-icon-service"></i>
+          <el-button type="primary" @click="wsSend">发送</el-button>
+        </div>
       </div>
     </div>
   </div>
