@@ -1,6 +1,7 @@
 <template>
   <div class="calcCircularLayout">
     <p>JavaScript计算N个点随机排列成圆的各个点坐标 </p>
+    <p>随机点的原理是根据 半径 ✖ 角度的正弦值和余弦值来得到 x轴和y轴 的距离。因此只要生成一个随机的角度就可以了</p>
     <el-form label-width="120px">
       <el-form-item label="坐标个数：">
         <el-input-number v-model="form.nodeNum" :min="1" :max="50"></el-input-number>
