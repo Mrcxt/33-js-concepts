@@ -3,7 +3,11 @@
     <div class="left">
       <div class="logo">JavaScript 练习</div>
     </div>
-    <div class="right"></div>
+    <div class="right">
+      <a href="https://github.com/Mrcxt/33-js-concepts" target="_blank" rel="noopener noreferrer">
+        <el-button type="text" icon="fa fa-github fa-2x"></el-button>
+      </a>
+    </div>
   </div>
 </template>
 
@@ -14,8 +18,8 @@ export default {};
 <style lang="less" scoped>
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   height: 100%;
   border-bottom: 1px solid #eee;
 }

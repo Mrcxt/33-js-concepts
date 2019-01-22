@@ -18,7 +18,7 @@ export default new Router({
     },
     {
       path: "/IM",
-      name: "虾哔哔",
+      name: "虾哔哔 IM",
       component: () => import("./views/IM/IM.vue")
     },
     {

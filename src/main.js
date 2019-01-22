@@ -11,6 +11,7 @@ import days from "dayjs";
 import "./style/reset.less";
 import "normalize.css";
 import "element-ui/lib/theme-chalk/index.css";
+import "font-awesome/css/font-awesome.css";
 
 /* install */
 Vue.use(ElementUI, {
