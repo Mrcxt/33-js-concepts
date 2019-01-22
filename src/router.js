@@ -23,7 +23,7 @@ export default new Router({
     },
     {
       path: "/customCss",
-      name: "customCss",
+      name: "在线换肤功能",
       component: () => import("./views/customCss/customCss.vue")
     }
   ]
