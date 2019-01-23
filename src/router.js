@@ -6,25 +6,39 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
-      path: "/",
-      name: "leetCode",
-      component: () => import("./views/leetCode/leetCode.vue")
+      path: "/JavaScript",
+      name: "JavaScript",
+      component: () => import("./components/layout/layout.vue"),
+      children: [
+        {
+          path: "leetCode",
+          name: "leetCode",
+          component: () => import("./views/JavaScript/leetCode/leetCode.vue")
+        },
+        {
+          path: "calcCircularLayout",
+          name: "随机坐标点",
+          component: () =>
+            import("./views/JavaScript/calcCircularLayout/calcCircularLayout.vue")
+        },
+        {
+          path: "IM",
+          name: "虾哔哔 IM",
+          component: () => import("./views/JavaScript/IM/IM.vue")
+        }
+      ]
     },
     {
-      path: "/calcCircularLayout",
-      name: "随机坐标点",
-      component: () =>
-        import("./views/calcCircularLayout/calcCircularLayout.vue")
-    },
-    {
-      path: "/IM",
-      name: "虾哔哔 IM",
-      component: () => import("./views/IM/IM.vue")
-    },
-    {
-      path: "/customCss",
-      name: "在线换肤功能",
-      component: () => import("./views/customCss/customCss.vue")
+      path: "/CSS",
+      name: "CSS",
+      component: () => import("./components/layout/layout.vue"),
+      children: [
+        {
+          path: "customCss",
+          name: "在线换肤功能",
+          component: () => import("./views/CSS/customCss/customCss.vue")
+        }
+      ]
     }
   ]
 });

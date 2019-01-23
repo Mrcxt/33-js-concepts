@@ -76,7 +76,7 @@ export default {
     };
   },
   created() {
-    // this.initSocket();
+    this.initSocket();
   },
   watch: {
     msg_list() {

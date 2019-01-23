@@ -1,33 +1,11 @@
 <template>
   <div id="app">
-    <el-container>
-      <!-- header -->
-      <el-header>
-        <Header></Header>
-      </el-header>
-      <el-container>
-        <!-- aside -->
-        <el-aside width="200px">
-          <MenuGroup></MenuGroup>
-        </el-aside>
-        <!-- main -->
-        <el-main>
-          <router-view />
-        </el-main>
-      </el-container>
-    </el-container>
+    <router-view />
   </div>
 </template>
 <script>
-import MenuGroup from "./components/menu/MenuGroup";
-import Header from "./components/header";
-
 export default {
-  name: "home",
-  components: {
-    MenuGroup,
-    Header
-  }
+  name: "home"
 };
 </script>
 <style lang="less" scoped>
