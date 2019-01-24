@@ -6,6 +6,11 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
+      path: "/home",
+      name: "首页",
+      component: () => import("./views/home/home.vue")
+    },
+    {
       path: "/JavaScript",
       name: "JavaScript",
       component: () => import("./components/layout/layout.vue"),

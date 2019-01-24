@@ -1,10 +1,13 @@
 <template>
-  <el-menu :default-active=" fullPath" router>
+  <el-menu :default-active="fullPath" router>
     <template v-for="(item, index) in routerList">
-      <!-- <template v-if="item.meta.visible"> -->
-      <el-menu-item v-if="!item.children" :key="item.key" :index="item.path">{{item.name}}</el-menu-item>
-      <sub-menu v-else :data="item" :path="item.path" :key="item.key"></sub-menu>
-      <!-- </template> -->
+      <template v-if="'meta' in item">
+
+        <template v-if="'visible' in item.meta">
+          <el-menu-item v-if="!item.children" :key="item.key" :index="item.path">{{item.name}}</el-menu-item>
+          <sub-menu v-else :data="item" :path="item.path" :key="item.key"></sub-menu>
+        </template>
+      </template>
     </template>
   </el-menu>
 </template>

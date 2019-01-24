@@ -16,6 +16,7 @@
     <div class="customCss-demo">
       <span>测试文字，测试文字，测试文字，测试文字</span>
     </div>
+    <div class="spin"></div>
   </div>
 </template>
 
@@ -49,6 +50,22 @@ export default {
   .customCss-demo {
     font-size: var(--size);
     color: var(--color);
+  }
+  .spin {
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(0, 0, 0, 0.1);
+    border-top-color: #7983ff;
+    border-radius: 100%;
+    animation: spin 1s linear infinite;
+  }
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 </style>

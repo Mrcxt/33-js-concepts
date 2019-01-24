@@ -41,9 +41,5 @@ export default {
 
 <style lang="less" scoped>
 .leetCode {
-  width: 100%;
-  height: 100%;
-  background: url("https://cn.bing.com/az/hprichbg/rb/OceanDrive_ZH-CN8199064696_1920x1080.jpg")
-    center;
 }
 </style>

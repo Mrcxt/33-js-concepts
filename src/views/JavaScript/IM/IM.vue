@@ -86,11 +86,12 @@ export default {
   methods: {
     initSocket() {
       let parmas = {
+        server: "212.64.45.79",
         sid: this.UUID(),
-        botid: "501f522a99184b789b8e81d504380860",
+        botid: "d5eac34f23cf406a9af48609b639d48e",
         debugmode: "on"
       };
-      let url = `ws://192.168.179.215/ws?sid=${parmas.sid}&botid=${
+      let url = `ws://${parmas.server}/ws?sid=${parmas.sid}&botid=${
         parmas.botid
       }&debugmode=${parmas.debugmode}`;
       this.Socket = new WebSocket(url);
@@ -286,7 +287,6 @@ export default {
     flex-direction: column;
     background-color: #f5f5f5;
     .im_content-groups {
-      display: flex;
       overflow: scroll;
       flex: auto;
       padding: 0 15px;

@@ -18,7 +18,7 @@ Vue.use(ElementUI, {
   size: "mini"
 });
 
-Vue.prototype.axios = axios;
+Vue.prototype.$axios = axios;
 Vue.prototype.$days = days;
 
 /* config */
