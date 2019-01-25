@@ -6,8 +6,14 @@ Vue.use(Router);
 export default new Router({
   routes: [
     {
+      path: "/",
+      redirect: "/JavaScript",
+      visible: false
+    },
+    {
       path: "/home",
       name: "首页",
+      visible: false,
       component: () => import("./views/home/home.vue")
     },
     {
