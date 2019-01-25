@@ -5,7 +5,7 @@ import store from "./store";
 import "./registerServiceWorker";
 import ElementUI from "element-ui";
 import axios from "axios";
-import days from "dayjs";
+import dayjs from "dayjs";
 
 /* css */
 import "./style/reset.less";
@@ -19,7 +19,7 @@ Vue.use(ElementUI, {
 });
 
 Vue.prototype.$axios = axios;
-Vue.prototype.$days = days;
+Vue.prototype.$dayjs = dayjs;
 
 /* config */
 Vue.config.productionTip = false;

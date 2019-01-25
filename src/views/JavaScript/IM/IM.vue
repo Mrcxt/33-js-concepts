@@ -1,6 +1,6 @@
 <template>
   <div class="IM-demo">
-    <p>在线聊天室 -- “虾哔哔”。通过 websocket 实现的简易聊天室。</p>
+    <!-- <p>在线聊天室 -- “虾哔哔”。通过 websocket 实现的简易聊天室。</p> -->
     <div class="IM">
       <div class="im_header">
         <div class="im_header-name">
@@ -18,7 +18,9 @@
             <template v-for="(item, index) in msg_list">
               <li class="im_content-tips" v-if="item.type&&item.type === 'tips'"><span>{{item.msg}}</span></li>
               <li class="im_content-msgs" v-else :rule="item.log.user_type">
-                <div class="im_content-msgs-time">{{item.log.msg_time}}</div>
+                <!-- time -->
+                <div class="im_content-msgs-time">{{$dayjs(item.log.msg_time).format('YYYY-MM-DD HH:mm:ss')}}</div>
+                <!-- msg -->
                 <div class="im_content-msgs-main">
                   <i class="im_icon el-icon-picture"></i>
                   <div class="im_content-msgs-msg">
@@ -32,8 +34,8 @@
         </div>
         <!--  -->
         <div class="im_content-tags">
-          <div class="im_content-tags-box">
-            <el-button v-for="(item, index) in 10" :key="index" round>测试啊</el-button>
+          <div class="im_content-tags-box" @click="clickHotQuestion">
+            <el-button class="" v-for="(item, index) in 10" :key="index" round>tag</el-button>
           </div>
         </div>
       </div>
@@ -41,7 +43,10 @@
         <textarea class="im_inputbox-textarea" v-model.trim="input_msg" @keyup.enter="wsSend" autocomplete="off" placeholder="请输入您想问的问题..."></textarea>
         <div class="im_inputbox-tools">
           <i class="im_icon el-icon-service"></i>
-          <el-button type="primary" @click="wsSend" round>发送</el-button>
+          <div>
+            <el-button @click="wsClose" round>关闭</el-button>
+            <el-button type="primary" @click="wsSend" round>发送</el-button>
+          </div>
         </div>
       </div>
     </div>
@@ -53,7 +58,10 @@ export default {
   name: "IM",
   data() {
     return {
+      server: "212.64.45.79",
+      botid: "d5eac34f23cf406a9af48609b639d48e",
       Socket: null,
+      input_msg: "",
       msg_list: [
         // {
         //   msg: "",
@@ -72,11 +80,17 @@ export default {
         //   }
         // }
       ],
-      input_msg: ""
+      hot_question: []
     };
   },
+  computed: {},
   created() {
-    this.initSocket();
+    try {
+      this.initSocket();
+      this.getHotQuestion();
+    } catch (error) {
+      console.log(error);
+    }
   },
   watch: {
     msg_list() {
@@ -86,9 +100,9 @@ export default {
   methods: {
     initSocket() {
       let parmas = {
-        server: "212.64.45.79",
+        server: this.server,
+        botid: this.botid,
         sid: this.UUID(),
-        botid: "d5eac34f23cf406a9af48609b639d48e",
         debugmode: "on"
       };
       let url = `ws://${parmas.server}/ws?sid=${parmas.sid}&botid=${
@@ -112,18 +126,17 @@ export default {
 
     /* 事件 */
     wsOnOpen(res) {
-      console.log(res);
+      // console.log(res);
       this.msg_list.push({
         type: "tips",
         msg: "机器人上线了"
       });
-      // this.scrollToBottom();
+      this.wsSend();
     },
     wsOnMessage(res) {
-      console.log(res);
+      // console.log(res);
       let data = JSON.parse(res.data);
       this.msg_list.push(data);
-      // this.scrollToBottom();
     },
     wsOnError(err) {},
     wsOnClose(res) {
@@ -131,26 +144,54 @@ export default {
         type: "tips",
         msg: "机器人下线了"
       });
-      // this.scrollToBottom();
     },
 
     /* 方法 */
-    wsSend() {
-      if (this.input_msg != "") {
-        this.Socket.send(this.input_msg);
-        let time = this.$days().format("YYYY-MM-DD HH-mm-ss");
-        this.msg_list.push({
-          msg: this.input_msg,
-          log: {
-            user_type: 0, //用户类型,0为访客，1为bot，2为座席
-            msg_type: 0, //消息类型,0为文本，1为其他
-            msg_time: time
-          }
-        });
-        this.input_msg = "";
-        // this.scrollToBottom();
+    wsSend(text) {
+      console.log(this.Socket.readyState);
+
+      if (this.Socket.readyState === 1) {
+        if (this.input_msg != "") {
+          this.Socket.send(this.input_msg);
+          let time = this.$dayjs();
+          this.msg_list.push({
+            msg: this.input_msg,
+            log: {
+              user_type: 0, //用户类型,0为访客，1为bot，2为座席
+              msg_type: 0, //消息类型,0为文本，1为其他
+              msg_time: time
+            }
+          });
+          this.input_msg = "";
+        }
+      } else {
+        this.initSocket();
       }
     },
+    wsClose() {
+      this.Socket.close();
+    },
+    /* 热门问题tag */
+    getHotQuestion() {
+      this.$axios
+        .post(`http://${this.server}/cms/api/hot_question`, {
+          params: {
+            bit_id: this.botid,
+            start_time: this.$dayjs().format("YYYY-MM-DD"),
+            end_time: this.$dayjs(
+              new Date().getTime() - 7 * 24 * 3600 * 1000
+            ).format("YYYY-MM-DD")
+          }
+        })
+        .then(function(response) {})
+        .catch(function(error) {});
+    },
+    clickHotQuestion(e) {
+      const text = e.target.innerText;
+      this.input_msg = text;
+      this.wsSend();
+    },
+
     /* tool */
     /**
      * generateUUID 生成UUID
@@ -375,7 +416,14 @@ export default {
         overflow-x: scroll;
         &::-webkit-scrollbar {
           display: none;
-          width: 0;
+          // height: 3px;
+        }
+        .el-button {
+          border: none;
+          &:focus {
+            background-color: #fff;
+            color: #606266;
+          }
         }
       }
     }
