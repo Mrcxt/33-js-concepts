@@ -175,13 +175,11 @@ export default {
     getHotQuestion() {
       this.$axios
         .post(`http://${this.server}/cms/api/hot_question`, {
-          params: {
-            bit_id: this.botid,
-            start_time: this.$dayjs().format("YYYY-MM-DD"),
-            end_time: this.$dayjs(
-              new Date().getTime() - 7 * 24 * 3600 * 1000
-            ).format("YYYY-MM-DD")
-          }
+          bit_id: this.botid,
+          start_time: this.$dayjs().format("YYYY-MM-DD"),
+          end_time: this.$dayjs(
+            new Date().getTime() - 7 * 24 * 3600 * 1000
+          ).format("YYYY-MM-DD")
         })
         .then(function(response) {})
         .catch(function(error) {});
