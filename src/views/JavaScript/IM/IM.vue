@@ -32,10 +32,10 @@
             <!--  -->
           </ul>
         </div>
-        <!--  -->
-        <div class="im_content-tags">
-          <div class="im_content-tags-box" @click="clickHotQuestion">
-            <el-button class="" v-for="(item, index) in 10" :key="index" round>tag</el-button>
+        <!-- 热门问题 -->
+        <div class="im_content-question">
+          <div class="im_content-question-box" @click="clickHotQuestion">
+            <el-button class="" v-for="(item, index) in hot_question" :key="index" round>{{item.question}}</el-button>
           </div>
         </div>
       </div>
@@ -175,14 +175,17 @@ export default {
     getHotQuestion() {
       this.$axios
         .post(`http://${this.server}/cms/api/hot_question`, {
-          bit_id: this.botid,
-          start_time: this.$dayjs().format("YYYY-MM-DD"),
-          end_time: this.$dayjs(
+          bot_id: this.botid,
+          start_time: this.$dayjs(
             new Date().getTime() - 7 * 24 * 3600 * 1000
-          ).format("YYYY-MM-DD")
+          ).format("YYYY-MM-DD"),
+          end_time: this.$dayjs().format("YYYY-MM-DD")
         })
-        .then(function(response) {})
-        .catch(function(error) {});
+        .then(res => {
+          console.log(res.data);
+          this.hot_question = res.data;
+        })
+        .catch(error => {});
     },
     clickHotQuestion(e) {
       const text = e.target.innerText;
@@ -405,11 +408,11 @@ export default {
         }
       }
     }
-    .im_content-tags {
+    .im_content-question {
       flex-shrink: 0;
       padding: 5px 10px;
       width: 100%;
-      .im_content-tags-box {
+      .im_content-question-box {
         display: flex;
         overflow-x: scroll;
         &::-webkit-scrollbar {
