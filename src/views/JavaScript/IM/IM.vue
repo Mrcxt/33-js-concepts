@@ -12,6 +12,7 @@
         </div>
       </div>
       <div class="im_content">
+        <!-- 对话列表 -->
         <div class="im_content-groups" ref="ref_scroll">
           <ul>
             <!--  -->
@@ -33,12 +34,19 @@
           </ul>
         </div>
         <!-- 热门问题 -->
-        <div class="im_content-question">
+        <div class="im_content-question" v-if="hot_question">
           <div class="im_content-question-box" @click="clickHotQuestion">
             <el-button class="" v-for="(item, index) in hot_question" :key="index" round>{{item.question}}</el-button>
           </div>
         </div>
+        <!-- 问题推荐 -->
+        <div class="im_content-similar_question" v-if="similar_question">
+          <ul>
+            <li v-for="(item, index) in similar_question" :key="index" @click="clickSimilarQuestion">{{item}}</li>
+          </ul>
+        </div>
       </div>
+      <!-- 输入框 -->
       <div class="im_inputbox">
         <textarea class="im_inputbox-textarea" v-model.trim="input_msg" @keyup.enter="wsSend" autocomplete="off" placeholder="请输入您想问的问题..."></textarea>
         <div class="im_inputbox-tools">
@@ -54,12 +62,16 @@
 </template>
 
 <script>
+import { debounce } from "lodash";
+
 export default {
   name: "IM",
   data() {
     return {
-      server: "212.64.45.79",
-      botid: "d5eac34f23cf406a9af48609b639d48e",
+      // server: "212.64.45.79",
+      // botid: "d5eac34f23cf406a9af48609b639d48e",
+      server: "192.168.179.215",
+      botid: "501f522a99184b789b8e81d504380860",
       Socket: null,
       input_msg: "",
       msg_list: [
@@ -104,8 +116,7 @@ export default {
     try {
       this.initSocket();
       this.getHotQuestion();
-      // this.getKbCates();
-      // this.getSimilarQuestion();
+      this.getKbCates();
     } catch (error) {
       console.log(error);
     }
@@ -113,7 +124,11 @@ export default {
   watch: {
     msg_list() {
       this.scrollToBottom();
-    }
+    },
+    input_msg: debounce(function(newVal, oldVal) {
+      // console.log(this);
+      this.getSimilarQuestion(newVal);
+    }, 200)
   },
   methods: {
     initSocket() {
@@ -215,28 +230,40 @@ export default {
 
     getKbCates() {
       this.$axios
-        .get("api/get_kb_cates", {
+        .get(`http://${this.server}/api/get_kb_cates`, {
           params: {
             bot_id: this.botid
           }
         })
         .then(res => {
-          console.log(res);
+          // console.log(res);
+          tis.cate_ids = res.data.cate_ids;
         })
         .catch(error => {});
     },
 
     /* 输入问题推荐 */
-    getSimilarQuestion() {
-      this.$axios
-        .post("api/input_suggest", {
-          bot_id: this.botid,
-          cate_ids: this.cate_ids,
-          // keyword: this.input_msg
-          keyword: "退货"
-        })
-        .then(res => {})
-        .catch(error => {});
+    getSimilarQuestion(keyword) {
+      if (keyword) {
+        this.$axios
+          .post(`http://${this.server}/api/input_suggest`, {
+            bot_id: this.botid,
+            cate_ids: this.cate_ids,
+            // keyword: this.input_msg
+            keyword: keyword
+          })
+          .then(res => {
+            this.similar_question = res.data.keyword_question;
+          })
+          .catch(error => {});
+      } else {
+        this.similar_question = [];
+      }
+    },
+    clickSimilarQuestion(e) {
+      const text = e.target.innerText;
+      this.input_msg = text;
+      this.wsSend();
     },
 
     /* tool */
@@ -369,6 +396,7 @@ export default {
   }
   // content
   .im_content {
+    position: relative;
     display: flex;
     flex: auto;
     // padding: 10px 0;
@@ -454,6 +482,7 @@ export default {
         }
       }
     }
+    // 热门问题
     .im_content-question {
       flex-shrink: 0;
       padding: 5px 10px;
@@ -471,6 +500,24 @@ export default {
             background-color: #fff;
             color: #606266;
           }
+        }
+      }
+    }
+    // 问题推荐
+    .im_content-similar_question {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #edeff5;
+      ul {
+        margin: 0;
+        padding: 0;
+        li {
+          padding: 10px;
+          border-bottom: 1px solid #fff;
+          color: #222;
+          cursor: pointer;
         }
       }
     }
