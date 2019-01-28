@@ -80,7 +80,23 @@ export default {
         //   }
         // }
       ],
-      hot_question: []
+      hot_question: [],
+      cate_ids: [
+        [
+          "014569b61518462991d18532c3e3b668",
+          "10998f086927411f82f21e9a5107fa96",
+          "1f6b0312bfa9496d93ae7af7247c63f3",
+          "2db2877bc8504f3eafac5c45cd78baf2",
+          "5d4aacd5c5fb4934ad2068f3d2a14fcf",
+          "6714309e7eea4273a71b10a4283b35c3",
+          "679ea286ddbb41ac92e5ea0cd803e6e7",
+          "7fafa8a1ef8447fb804706eca4a9a163",
+          "bbb72e297875488aa424e60a2e25b82f",
+          "c6ce7c78095d4fc58bee92b600102451",
+          "ef4cd92534be4cc5b00f1efaf0e34976"
+        ]
+      ],
+      similar_question: []
     };
   },
   computed: {},
@@ -88,6 +104,8 @@ export default {
     try {
       this.initSocket();
       this.getHotQuestion();
+      // this.getKbCates();
+      // this.getSimilarQuestion();
     } catch (error) {
       console.log(error);
     }
@@ -191,6 +209,34 @@ export default {
       const text = e.target.innerText;
       this.input_msg = text;
       this.wsSend();
+    },
+
+    /* 获取知识点分类id */
+
+    getKbCates() {
+      this.$axios
+        .get("api/get_kb_cates", {
+          params: {
+            bot_id: this.botid
+          }
+        })
+        .then(res => {
+          console.log(res);
+        })
+        .catch(error => {});
+    },
+
+    /* 输入问题推荐 */
+    getSimilarQuestion() {
+      this.$axios
+        .post("api/input_suggest", {
+          bot_id: this.botid,
+          cate_ids: this.cate_ids,
+          // keyword: this.input_msg
+          keyword: "退货"
+        })
+        .then(res => {})
+        .catch(error => {});
     },
 
     /* tool */
