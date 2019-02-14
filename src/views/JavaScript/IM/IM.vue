@@ -40,9 +40,9 @@
           </div>
         </div>
         <!-- 问题推荐 -->
-        <div class="im_content-similar_question" v-if="similar_question">
+        <div class="im_content-similar_question" v-if="similar_question&&input_msg">
           <ul>
-            <li v-for="(item, index) in similar_question" :key="index" @click="clickSimilarQuestion">{{item}}</li>
+            <li v-for="(item, index) in similar_question" :key="index" @click="clickSimilarQuestion" :tabindex="index">{{item}}</li>
           </ul>
         </div>
       </div>
@@ -74,52 +74,17 @@ export default {
       botid: "501f522a99184b789b8e81d504380860",
       Socket: null,
       input_msg: "",
-      msg_list: [
-        // {
-        //   msg: "",
-        //   sid: "",
-        //   isUseClick: false, //是否点击了有用没用
-        //   q_list: [],
-        //   q_list_std: [],
-        //   log: {
-        //     user_type: 1, //用户类型,0为访客，1为bot，2为座席
-        //     msg_type: 0, //消息类型,0为文本，1为其他
-        //     channel: 0, //渠道,0为API，1为web
-        //     msg_time: "2018-06-25 16:00",
-        //     ori_question: "",
-        //     std_question: "",
-        //     confidence: 0
-        //   }
-        // }
-      ],
+      msg_list: [],
       hot_question: [],
-      cate_ids: [
-        [
-          "014569b61518462991d18532c3e3b668",
-          "10998f086927411f82f21e9a5107fa96",
-          "1f6b0312bfa9496d93ae7af7247c63f3",
-          "2db2877bc8504f3eafac5c45cd78baf2",
-          "5d4aacd5c5fb4934ad2068f3d2a14fcf",
-          "6714309e7eea4273a71b10a4283b35c3",
-          "679ea286ddbb41ac92e5ea0cd803e6e7",
-          "7fafa8a1ef8447fb804706eca4a9a163",
-          "bbb72e297875488aa424e60a2e25b82f",
-          "c6ce7c78095d4fc58bee92b600102451",
-          "ef4cd92534be4cc5b00f1efaf0e34976"
-        ]
-      ],
+      cate_ids: [],
       similar_question: []
     };
   },
   computed: {},
   created() {
-    try {
-      this.initSocket();
-      this.getHotQuestion();
-      this.getKbCates();
-    } catch (error) {
-      console.log(error);
-    }
+    this.initSocket();
+    this.getHotQuestion();
+    this.getKbCates();
   },
   watch: {
     msg_list() {
@@ -183,8 +148,8 @@ export default {
     wsSend(text) {
       console.log(this.Socket.readyState);
 
-      if (this.Socket.readyState === 1) {
-        if (this.input_msg != "") {
+      if (this.input_msg != "") {
+        if (this.Socket.readyState === 1) {
           this.Socket.send(this.input_msg);
           let time = this.$dayjs();
           this.msg_list.push({
@@ -196,9 +161,9 @@ export default {
             }
           });
           this.input_msg = "";
+        } else {
+          this.initSocket();
         }
-      } else {
-        this.initSocket();
       }
     },
     wsClose() {
@@ -218,7 +183,9 @@ export default {
           console.log(res.data);
           this.hot_question = res.data;
         })
-        .catch(error => {});
+        .catch(error => {
+          console.log("object");
+        });
     },
     clickHotQuestion(e) {
       const text = e.target.innerText;
@@ -236,8 +203,7 @@ export default {
           }
         })
         .then(res => {
-          // console.log(res);
-          tis.cate_ids = res.data.cate_ids;
+          this.cate_ids = res.data.cate_ids;
         })
         .catch(error => {});
     },
