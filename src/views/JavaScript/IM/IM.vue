@@ -42,7 +42,7 @@
         <!-- 问题推荐 -->
         <div class="im_content-similar_question" v-if="similar_question&&input_msg">
           <ul>
-            <li v-for="(item, index) in similar_question" :key="index" @click="clickSimilarQuestion" :tabindex="index">{{item}}</li>
+            <li v-for="(item, index) in similar_question" :key="index" @click="clickSimilarQuestion">{{item}}</li>
           </ul>
         </div>
       </div>

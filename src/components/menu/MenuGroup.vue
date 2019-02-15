@@ -1,8 +1,11 @@
 <template>
-  <el-menu :default-active="fullPath" router>
+  <el-menu :default-active="fullPath" :collapse="sidebarIsCollapse" router>
     <template v-for="(item, index) in routerList">
       <template v-if="!('visible' in item) || item.visible">
-        <el-menu-item v-if="!item.children" :key="item.key" :index="item.path">{{item.name}}</el-menu-item>
+        <el-menu-item v-if="!item.children" :key="item.key" :index="item.path">
+          <i class="el-icon-menu"></i>
+          <span slot="title">{{item.name}}</span>
+        </el-menu-item>
         <sub-menu v-else :data="item" :path="item.path" :key="item.key"></sub-menu>
       </template>
     </template>
@@ -11,6 +14,7 @@
 
 <script>
 import SubMenu from "./subMenu";
+import { mapGetters } from "vuex";
 
 export default {
   data() {
@@ -20,6 +24,7 @@ export default {
     "sub-menu": SubMenu
   },
   computed: {
+    ...mapGetters(["sidebarIsCollapse"]),
     // router 数据
     routerList() {
       return this.$router.options.routes;
@@ -37,7 +42,7 @@ export default {
 
 <style lang="less" scoped>
 .el-menu {
-  min-height: 100%;
+  flex: auto;
 }
 </style>
 

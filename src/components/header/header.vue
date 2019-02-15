@@ -1,7 +1,12 @@
 <template>
   <div class="header">
     <div class="left">
-      <div class="logo">性感代码 在线练习</div>
+      <div class="isCollapse">
+        <div class="logo">
+          <p>性感代码 在线练习</p>
+        </div>
+        <!-- <el-button type="text" icon="el-icon-menu" @click="setIsCollapse"></el-button> -->
+      </div>
     </div>
     <div class="right">
       <a href="https://github.com/Mrcxt/33-js-concepts" target="_blank" rel="noopener noreferrer">
@@ -12,7 +17,18 @@
 </template>
 
 <script>
-export default {};
+import { mapGetters } from "vuex";
+export default {
+  computed: {
+    ...mapGetters(["sidebarIsCollapse"])
+  },
+  methods: {
+    setIsCollapse() {
+      this.$store.commit("SET_SIDEBAR_IS_COLLAPSE", !this.sidebarIsCollapse);
+      console.log(this.sidebarIsCollapse);
+    }
+  }
+};
 </script>
 
 <style lang="less" scoped>
@@ -23,7 +39,7 @@ export default {};
   height: 100%;
   border-bottom: 1px solid #eee;
   .left {
-    .logo {
+    .isCollapse {
       color: #b8bec5;
       text-shadow: 0 2px white;
       font-weight: bold;
