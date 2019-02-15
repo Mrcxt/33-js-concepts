@@ -36,6 +36,11 @@ export default new Router({
           path: "IM",
           name: "虾哔哔 IM",
           component: () => import("./views/JavaScript/IM/IM.vue")
+        },
+        {
+          path: "D3",
+          name: "D3-知识图谱",
+          component: () => import("./views/JavaScript/D3/D3.vue")
         }
       ]
     },
