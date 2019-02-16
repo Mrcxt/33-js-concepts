@@ -1,7 +1,7 @@
 <template>
   <div>
     <div id="graph"></div>
-    <svg></svg>
+    <div id="force"></div>
   </div>
 </template>
 
@@ -68,98 +68,135 @@ export default {
         .attr("fill", "#ecf0f1");
     },
     forceInit() {
-      var width = 500;
-      var height = 500;
-      var svg = d3.select("svg");
-      svg
-        .attr("x", 300)
-        .attr("y", 300)
-        .attr("width", 1000)
-        .attr("height", 1000);
+      var marge = { top: 60, bottom: 60, left: 60, right: 60 };
+      var svg = d3
+        .select("#force")
+        .append("svg")
+        .attr("width", 400)
+        .attr("height", 300);
+      var width = svg.attr("width");
+      var height = svg.attr("height");
+      var g = svg
+        .append("g")
+        .attr("transform", "translate(" + marge.top + "," + marge.left + ")");
 
+      //准备数据
       var nodes = [
-        { name: "桂林" },
-        { name: "广州" },
-        { name: "厦门" },
-        { name: "杭州" },
-        { name: "上海" },
-        { name: "青岛" },
-        { name: "天津" }
+        { name: "湖南邵阳" },
+        { name: "山东莱州" },
+        { name: "广东阳江" },
+        { name: "山东枣庄" },
+        { name: "泽" },
+        { name: "恒" },
+        { name: "鑫" },
+        { name: "明山" },
+        { name: "班长" }
       ];
 
       var edges = [
-        { source: 0, target: 1 },
-        { source: 0, target: 2 }, //试了下，source和target不能换名字的
-        { source: 0, target: 3 },
-        { source: 1, target: 4 },
-        { source: 1, target: 5 },
-        { source: 1, target: 6 }
+        { source: 0, target: 4, relation: "籍贯", value: 1.3 },
+        { source: 4, target: 5, relation: "舍友", value: 1 },
+        { source: 4, target: 6, relation: "舍友", value: 1 },
+        { source: 4, target: 7, relation: "舍友", value: 1 },
+        { source: 1, target: 6, relation: "籍贯", value: 2 },
+        { source: 2, target: 5, relation: "籍贯", value: 0.9 },
+        { source: 3, target: 7, relation: "籍贯", value: 1 },
+        { source: 5, target: 6, relation: "同学", value: 1.6 },
+        { source: 6, target: 7, relation: "朋友", value: 0.7 },
+        { source: 6, target: 8, relation: "职责", value: 2 }
       ];
-      /*初始化force*/
+      //设置一个color的颜色比例尺，为了让不同的扇形呈现不同的颜色
+      var colorScale = d3
+        .scaleOrdinal()
+        .domain(d3.range(nodes.length))
+        .range(d3.schemeCategory10);
 
-      var forceSimulation = d3.layout
+      //新建一个力导向图
+      var forceSimulation = d3
         .forceSimulation()
-        .nodes(nodes)
+        .force("link", d3.forceLink())
+        .force("charge", d3.forceManyBody())
+        .force("center", d3.forceCenter());
+
+      //初始化力导向图，也就是传入数据
+      //生成节点数据
+      forceSimulation.nodes(nodes).on("tick", ticked); //这个函数很重要，后面给出具体实现和说明
+      //生成边数据
+      forceSimulation
+        .force("link")
         .links(edges)
-        .size([300, 300]) //作用力的中心区域
-        .linkDistance(100) //连线的长度
-        .charge([-100]); //负数为排斥 正数为吸引
-      /*很关键 启动force*/
-      forceSimulation.start();
-      /*添加连线*/
-      var svg_edges = svg
+        .distance(function(d) {
+          //每一边的长度
+          return d.value * 100;
+        });
+      //设置图形的中心位置
+      forceSimulation
+        .force("center")
+        .x(width / 2)
+        .y(height / 2);
+      //在浏览器的控制台输出
+      console.log(nodes);
+      console.log(edges);
+
+      //有了节点和边的数据后，我们开始绘制
+      //绘制边
+      var links = g
+        .append("g")
         .selectAll("line")
         .data(edges)
         .enter()
         .append("line")
-        .attr("dx", function(d, i) {
-          return i * 20;
+        .attr("stroke", function(d, i) {
+          return colorScale(i);
         })
-        .attr("dy", function(d, i) {
-          return i * 30;
-        })
-        .style("stroke", "#ccc") //线条的颜色
-        .style("stroke-width", 1); //线条的宽度
-      /*颜色*/
-      var color = d3.scale.category20();
-      /*添加节点*/
-      var svg_nodes = svg
-        .selectAll("circle")
-        .data(nodes)
-        .enter()
-        .append("circle")
-        .attr("cx", function(d, i) {
-          return i * 20;
-        })
-        .attr("cy", function(d, i) {
-          return i * 30;
-        })
-        .attr("r", 20)
-        .style("fill", function(d, i) {
-          return color(i);
-        })
-        .call(forceSimulation.drag);
-      //调用drag函数使节点能被拖动
-      /*添加描述节点的文字*/
-      var svg_texts = svg
+        .attr("stroke-width", 1);
+      var linksText = g
+        .append("g")
         .selectAll("text")
-        .data(nodes)
+        .data(edges)
         .enter()
         .append("text")
-        .attr("class", "good")
-        .style("fill", "black")
-        .attr("dx", -10) //文字相对node中心的移动
-        .attr("dy", 10)
-        .text(function(d, i) {
-          //返回节点的名字
-          return d.name;
-        })
-        .style("fill", "white");
+        .text(function(d) {
+          return d.relation;
+        });
 
-      forceSimulation.on("tick", function() {
-        //对于每一个时间间隔  将之前通过force活着
-        //更新连线坐标
-        svg_edges
+      //绘制节点
+      //老规矩，先为节点和节点上的文字分组
+      var gs = g
+        .selectAll(".circleText")
+        .data(nodes)
+        .enter()
+        .append("g")
+        .attr("transform", function(d, i) {
+          var cirX = d.x;
+          var cirY = d.y;
+          return "translate(" + cirX + "," + cirY + ")";
+        })
+        .call(
+          d3
+            .drag()
+            .on("start", started)
+            .on("drag", dragged)
+            .on("end", ended)
+        );
+
+      //绘制节点
+      gs.append("circle")
+        .attr("r", 10)
+        .attr("fill", function(d, i) {
+          return colorScale(i);
+        });
+      //文字
+      gs.append("text")
+        .attr("x", -10)
+        .attr("y", -20)
+        .attr("dy", 10)
+        .text(function(d) {
+          return d.name;
+        });
+
+      function ticked() {
+        links
           .attr("x1", function(d) {
             return d.source.x;
           })
@@ -173,24 +210,36 @@ export default {
             return d.target.y;
           });
 
-        //更新节点坐标
-        svg_nodes
-          .attr("cx", function(d) {
-            return d.x;
-          })
-          .attr("cy", function(d) {
-            return d.y;
-          });
-
-        //更新文字坐标
-        svg_texts
+        linksText
           .attr("x", function(d) {
-            return d.x;
+            return (d.source.x + d.target.x) / 2;
           })
           .attr("y", function(d) {
-            return d.y;
+            return (d.source.y + d.target.y) / 2;
           });
-      });
+
+        gs.attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        });
+      }
+      function started(d) {
+        if (!d3.event.active) {
+          forceSimulation.alphaTarget(0.8).restart();
+        }
+        d.fx = d.x;
+        d.fy = d.y;
+      }
+      function dragged(d) {
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+      }
+      function ended(d) {
+        if (!d3.event.active) {
+          forceSimulation.alphaTarget(0);
+        }
+        d.fx = null;
+        d.fy = null;
+      }
     }
   }
 };
