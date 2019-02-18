@@ -2,6 +2,7 @@
   <div>
     <div id="graph"></div>
     <div id="force"></div>
+    <div id="force01"></div>
   </div>
 </template>
 
@@ -14,6 +15,7 @@ export default {
   mounted() {
     this.d3init();
     this.forceInit();
+    this.forceInit01();
   },
   methods: {
     d3init() {
@@ -52,7 +54,7 @@ export default {
         .attr("stroke-width", 2)
         .attr("stroke", "#e74c3c");
       // 创建 arc
-      var arc = d3
+      let arc = d3
         .arc()
         .innerRadius(radius - 20)
         .outerRadius(radius)
@@ -68,20 +70,17 @@ export default {
         .attr("fill", "#ecf0f1");
     },
     forceInit() {
-      var marge = { top: 60, bottom: 60, left: 60, right: 60 };
-      var svg = d3
+      let svg = d3
         .select("#force")
         .append("svg")
         .attr("width", 400)
         .attr("height", 300);
-      var width = svg.attr("width");
-      var height = svg.attr("height");
-      var g = svg
-        .append("g")
-        .attr("transform", "translate(" + marge.top + "," + marge.left + ")");
+      let width = svg.attr("width");
+      let height = svg.attr("height");
+      let g = svg.append("g");
 
       //准备数据
-      var nodes = [
+      let nodes = [
         { name: "湖南邵阳" },
         { name: "山东莱州" },
         { name: "广东阳江" },
@@ -93,8 +92,8 @@ export default {
         { name: "班长" }
       ];
 
-      var edges = [
-        { source: 0, target: 4, relation: "籍贯", value: 1.3 },
+      let edges = [
+        { source: 0, target: 4, relation: "123", value: 1.3 },
         { source: 4, target: 5, relation: "舍友", value: 1 },
         { source: 4, target: 6, relation: "舍友", value: 1 },
         { source: 4, target: 7, relation: "舍友", value: 1 },
@@ -106,13 +105,13 @@ export default {
         { source: 6, target: 8, relation: "职责", value: 2 }
       ];
       //设置一个color的颜色比例尺，为了让不同的扇形呈现不同的颜色
-      var colorScale = d3
+      let colorScale = d3
         .scaleOrdinal()
         .domain(d3.range(nodes.length))
         .range(d3.schemeCategory10);
 
       //新建一个力导向图
-      var forceSimulation = d3
+      let forceSimulation = d3
         .forceSimulation()
         .force("link", d3.forceLink())
         .force("charge", d3.forceManyBody())
@@ -140,7 +139,7 @@ export default {
 
       //有了节点和边的数据后，我们开始绘制
       //绘制边
-      var links = g
+      let links = g
         .append("g")
         .selectAll("line")
         .data(edges)
@@ -150,7 +149,7 @@ export default {
           return colorScale(i);
         })
         .attr("stroke-width", 1);
-      var linksText = g
+      let linksText = g
         .append("g")
         .selectAll("text")
         .data(edges)
@@ -162,14 +161,14 @@ export default {
 
       //绘制节点
       //老规矩，先为节点和节点上的文字分组
-      var gs = g
+      let gs = g
         .selectAll(".circleText")
         .data(nodes)
         .enter()
         .append("g")
         .attr("transform", function(d, i) {
-          var cirX = d.x;
-          var cirY = d.y;
+          let cirX = d.x;
+          let cirY = d.y;
           return "translate(" + cirX + "," + cirY + ")";
         })
         .call(
@@ -240,6 +239,31 @@ export default {
         d.fx = null;
         d.fy = null;
       }
+    },
+    forceInit01() {
+      let rect_data = [250, 210, 170, 130, 90];
+
+      let svg = d3
+        .select("#force01")
+        .append("svg")
+        .attr("width", 500)
+        .attr("height", "300");
+
+      let g = svg.append("g");
+
+      g.selectAll("rect")
+        .data(rect_data)
+        .enter()
+        .append("rect")
+        .attr("x", 20)
+        .attr("y", function(d, i) {
+          return i * 30;
+        })
+        .attr("width", function(d) {
+          return d;
+        })
+        .attr("height", 25)
+        .attr("fill", "blue");
     }
   }
 };
