@@ -41,7 +41,12 @@ export default new Router({
           path: "D3",
           name: "D3-知识图谱",
           component: () => import("./views/JavaScript/D3/D3.vue")
-        }
+        },
+        {
+          path: "IDCard",
+          name: "IDCard",
+          component: () => import("./views/JavaScript/IDCard/IDCard.vue")
+        },
       ]
     },
     {

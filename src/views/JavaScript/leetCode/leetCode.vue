@@ -1,6 +1,8 @@
 <template>
   <div class="leetCode">
-
+    <p>{{arr.length}}</p>
+    <el-button type="" @click="addArr">增加</el-button>
+    <el-button type="" @click="deleteArr">删除</el-button>
   </div>
 </template>
 
@@ -8,12 +10,20 @@
 export default {
   name: "leetCode",
   data() {
-    return {};
+    return {
+      arr: [1, 2, 3, 4, 5]
+    };
   },
   created() {
     this.init();
   },
   methods: {
+    addArr() {
+      this.arr.push(Math.floor(Math.random() * 10));
+    },
+    deleteArr() {
+      this.arr.splice(1, 1);
+    },
     init() {
       this.twoSum([2, 7, 11, 15], 9);
     },
