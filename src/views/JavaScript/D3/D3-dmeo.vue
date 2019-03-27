@@ -16,7 +16,9 @@ export default {
     // this.init1();
     // this.init2();
     // this.rect();
-    this.init4();
+    // this.init4();
+    // this.pie();
+    this.Force();
   },
   methods: {
     init1() {
@@ -111,22 +113,18 @@ export default {
 
       /* 比例尺 */
 
-      //   let linear = d3
-      //     .scaleLinear()
-      //     .domain([0, d3.max(dataset)])
-      //     .range([0, 250]);
-
       //   x轴比例尺
       let xScale = d3
         .scaleBand()
-        .range(d3.range(dataset.length))
-        .round([0, w - padding.l - padding.r]);
+        .domain(d3.range(dataset.length))
+        .rangeRound([0, w - padding.l - padding.r])
+        .padding(0.1);
 
       //   y轴比例尺
       let yScale = d3
         .scaleLinear()
         .domain([0, d3.max(dataset)])
-        .range(h - padding.t - padding.b);
+        .range([h - padding.t - padding.b, 0]);
 
       /* 坐标轴 */
 
@@ -144,32 +142,144 @@ export default {
       // 添加柱形图
 
       let rects = svg
-        .selectAll("rect")
+        .selectAll(".MyRect")
         .data(dataset)
         .enter()
         .append("rect")
-        .remove()
+        .attr("class", "MyRect")
+        .attr("transform", "translate(" + padding.l + "," + padding.t + ")")
         .attr("x", (d, i) => {
           return xScale(i) + rectPadding / 2;
         })
-        .attr("y", (d, i) => {
+        .attr("y", d => {
           return yScale(d);
         })
-        .attr("width", xScale.rangeBand() - rectPadding)
-        .attr("height", function(d) {
+        .attr("width", xScale.bandwidth() - rectPadding)
+        .attr("height", d => {
           return h - padding.t - padding.b - yScale(d);
         })
         .style("fill", "red");
 
+      rects
+        .transition()
+        .duration((d, i) => {
+          return 500 * i;
+        })
+        .delay(1000)
+        .style("fill", "green");
+
+      rects
+        .on("mouseover", function(d, i) {
+          d3.select(this).style("fill", "yellow");
+        })
+        .on("mouseout", function(d, i) {
+          d3.select(this)
+            .transition()
+            .duration(500)
+            .style("fill", "steelblue");
+        });
+
+      let texts = svg
+        .selectAll(".MyText")
+        .data(dataset)
+        .enter()
+        .append("text")
+        .attr("class", "MyText")
+        .attr(
+          "transform",
+          `translate(${(padding.l / 3) * 2},${-(padding.t / 4)})`
+        )
+        .attr("x", (d, i) => {
+          return xScale(i) + rectPadding / 2;
+        })
+        .attr("y", d => {
+          return yScale(d);
+        })
+        .attr("dx", function() {
+          return (xScale.bandwidth() - rectPadding) / 2;
+        })
+        .attr("dy", d => {
+          return 20;
+        })
+        .text(d => {
+          return d;
+        });
+
       //
+      //添加x轴
       svg
         .append("g")
         .attr("class", "axis")
-        .attr("transform", "translate(0,150)")
+        .attr(
+          "transform",
+          "translate(" + padding.l + "," + (h - padding.b) + ")"
+        )
         .call(xAxis);
+
+      //添加y轴
+      svg
+        .append("g")
+        .attr("class", "axis")
+        .attr("transform", "translate(" + padding.l + "," + padding.t + ")")
+        .call(yAxis);
     },
-    init5() {},
-    init6() {},
+    pie() {
+      let w = 300;
+      let h = 300;
+
+      let svg = d3
+        .select("#d3_demo")
+        .append("svg")
+        .attr("width", w)
+        .attr("height", h);
+
+      let dataset = [30, 10, 43, 55, 13];
+      let pie = d3.pie();
+      let piedata = pie(dataset);
+
+      let outerRadius = 150;
+      let innerRadius = 0;
+
+      let arc = d3
+        .arc()
+        .innerRadius(innerRadius)
+        .outerRadius(outerRadius);
+
+      let arcs = svg
+        .selectAll("g")
+        .data(piedata)
+        .enter()
+        .append("g")
+        // .exit()
+        // .remove()
+        .attr("transform", `translate(${w / 2},${h / 2})`);
+
+      console.log(arcs);
+
+      let color = d3.scaleOrdinal(d3.schemeCategory10);
+      let paths = arcs
+        .append("path")
+        .attr("fill", function(d, i) {
+          return color(i);
+        })
+        .attr("d", function(d) {
+          return arc(d); //调用弧生成器，得到路径值
+        });
+
+      let texts = arcs
+        .append("text")
+        .attr("transform", function(d, i) {
+          return `translate(${arc.centroid(d)})`;
+        })
+        .attr("text-anchor", "middle")
+        .text(function(d, i) {
+          return d.data;
+        });
+    },
+    Force() {
+      const w = 600;
+      const h = 600;
+    },
     init7() {}
   }
 };
