@@ -2,7 +2,6 @@
   <div style="height:100%">
     <el-input v-model="search" placeholder="输入关键字搜索" />
     <el-table :data="card_arr.values.filter(data => !search || data.姓名.toLowerCase().includes(search.toLowerCase()))" style="width: 100%" stripe height="100%">
-      >
       <el-table-column type="index" :index="1">
       </el-table-column>
       <!--  -->
