@@ -3,6 +3,18 @@
     <p>131231231</p>
     <p>131231231</p>
     <p>131231231</p>
+    <svg>
+      <rect x="60" y="10" rx="5" ry="5" width="30" height="30" />
+      <polyline points="60 110, 65 120, 70 115, 75 130, 80 125, 85 140, 90 135, 95 150, 100 145" />
+      <circle cx="25" cy="75" r="20" />
+    </svg>
+    <svg>
+      <ellipse cx="75" cy="75" rx="20" ry="5" />
+      <line x1="10" x2="50" y1="110" y2="150" />
+      <polygon points="50 160, 55 180, 70 180, 60 190, 65 205, 50 195, 35 205, 40 190, 30 180, 45 180" />
+      <!-- <path d="M 20 230 Q 40 205, 50 230 T 90230" /> -->
+    </svg>
+
   </div>
 </template>
 
@@ -279,6 +291,155 @@ export default {
     Force() {
       const w = 600;
       const h = 600;
+
+      let nodes = [
+        { name: "桂林" },
+        { name: "广州" },
+        { name: "厦门" },
+        { name: "杭州" },
+        { name: "上海" },
+        { name: "青岛" },
+        { name: "天津" }
+      ];
+
+      let links = [
+        { source: 0, target: 1 },
+        { source: 0, target: 2 },
+        { source: 0, target: 3 },
+        { source: 1, target: 4 },
+        { source: 1, target: 5 },
+        { source: 1, target: 6 }
+      ];
+
+      let force = d3
+        .forceSimulation(nodes)
+        .force("link", d3.forceLink(links))
+        .force("charge", d3.forceManyBody().strength(-100))
+        .force("center", d3.forceCenter());
+
+      force
+        .force("link")
+        .links(links)
+        .distance(function(d) {
+          //每一边的长度
+          return 200;
+        });
+      //设置图形的中心位置
+      force
+        .force("center")
+        .x(w / 2)
+        .y(h / 2);
+
+      console.log(nodes);
+      console.log(links);
+
+      let svg = d3
+        .select("#d3_demo")
+        .append("svg")
+        .attr("width", w)
+        .attr("height", h);
+      //
+
+      let svg_links = svg
+        .selectAll("line")
+        .data(links)
+        .enter()
+        .append("line")
+        .style("stroke", "#ccc")
+        .style("stroke-width", 1);
+
+      let color = d3.scaleOrdinal(d3.schemeCategory10);
+
+      //添加节点
+      let svg_nodes = svg
+        .selectAll("circle")
+        .data(nodes)
+        .enter()
+        .append("circle")
+        .attr("r", 20)
+        .style("fill", function(d, i) {
+          return color(i);
+        })
+        .call(
+          d3
+            .drag()
+            .on("start", dragstarted) //d3.drag() 创建一个拖曳行为
+            .on("drag", dragged)
+            .on("end", dragended)
+        ); //使得节点能够拖动
+
+      svg_nodes.on("click", function(d, i) {
+        console.log(d);
+      });
+
+      //监听拖拽开始
+      function dragstarted(d) {
+        if (!d3.event.active) force.alphaTarget(0.3).restart(); //alpha是动画的冷却系数，运动过程中会不断减小，直到小于0.005为止，此时动画会停止。
+        d.fx = d.x; //fx为固定坐标，x为初始坐标  注3>
+        d.fy = d.y;
+      }
+
+      //监听拖拽中
+      function dragged(d) {
+        d.fx = d3.event.x; //fevent.x为拖拽移动时的坐标
+        d.fy = d3.event.y;
+      }
+
+      //监听拖拽结束
+      function dragended(d) {
+        if (!d3.event.active) force.alphaTarget(0);
+        d.fx = null; //固定坐标清空
+        d.fy = null;
+      }
+
+      //添加描述节点的文字
+      let svg_texts = svg
+        .selectAll("text")
+        .data(nodes)
+        .enter()
+        .append("text")
+        .style("fill", "black")
+        .attr("dx", 20)
+        .attr("dy", 8)
+        .text(function(d) {
+          return d.name;
+        });
+
+      force.on("tick", function() {
+        //对于每一个时间间隔
+        //更新连线坐标
+        svg_links
+          .attr("x1", function(d) {
+            return d.source.x;
+          })
+          .attr("y1", function(d) {
+            return d.source.y;
+          })
+          .attr("x2", function(d) {
+            return d.target.x;
+          })
+          .attr("y2", function(d) {
+            return d.target.y;
+          });
+
+        //更新节点坐标
+        svg_nodes
+          .attr("cx", function(d) {
+            return d.x;
+          })
+          .attr("cy", function(d) {
+            return d.y;
+          });
+
+        //更新文字坐标
+        svg_texts
+          .attr("x", function(d) {
+            return d.x;
+          })
+          .attr("y", function(d) {
+            return d.y;
+          });
+      });
     },
     init7() {}
   }
