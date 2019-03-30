@@ -288,39 +288,128 @@ export default {
           return d.data;
         });
     },
-    Force() {
-      this.$axios
-        .post("http://111.231.144.200:6066/rest/appleyk/question/nlpquery", {
+    async Force() {
+      //
+      function formatString(string) {
+        let s = string
+          .replace(/\\ /g, "null")
+          .replace(/\\N/g, "null")
+          .replace(/\\n/g, "\\n")
+          .replace(/\\'/g, "\\'")
+          .replace(/\\"/g, '\\"')
+          .replace(/\\&/g, "\\&")
+          .replace(/\\r/g, "\\r")
+          .replace(/\\t/g, "\\t")
+          .replace(/\\b/g, "\\b")
+          .replace(/\\f/g, "\\f")
+          .replace(/[\u0000-\u0019]+/g, "");
+        let o = JSON.parse(s);
+        return o;
+      }
+
+      //
+
+      function idIndex(a, id) {
+        for (var i = 0; i < a.length; i++) {
+          if (a[i].id == id) return i;
+        }
+        return null;
+      }
+      let nodes = [],
+        links = [];
+      // res.data.forEach(function(row) {
+      //   row.graph.nodes.forEach(function(n) {
+      //     if (idIndex(nodes, n.id) == null)
+      //       nodes.push({
+      //         id: n.id,
+      //         label: n.labels[0],
+      //         title: n.properties.name
+      //       });
+      //   });
+      //   links = links.concat(
+      //     row.graph.relationships.map(function(r) {
+      //       return {
+      //         start: idIndex(nodes, r.startNode),
+      //         end: idIndex(nodes, r.endNode),
+      //         type: r.type
+      //       };
+      //     })
+      //   );
+      // });
+      // viz = { nodes: nodes, links: links };
+
+      // let nodes = [],
+      //   links = [];
+
+      await this.$axios
+        .post("http://111.231.144.200/kg/rest/appleyk/question/nlpquery", {
           text: "张曼玉的电影"
         })
         .then(res => {
           console.log(res);
+          let forceData = formatString(res.data.graph);
+          console.log(forceData);
+          // console.log(JSON.stringify(forceData));
+          // nodes = forceData.nodes;
+          // links = forceData.links;
+
+          // forceData.links.forEach(function(e) {
+          //   // Get the source and target nodes
+          //   var sourceNode = forceData.nodes.filter(function(n) {
+          //       return n.id === e.source;
+          //     })[0],
+          //     targetNode = forceData.nodes.filter(function(n) {
+          //       return n.id === e.target;
+          //     })[0];
+
+          //   // Add the edge to the array
+          //   links.push({ source: sourceNode, target: targetNode });
+          // });
+
+          forceData.nodes.forEach(function(n) {
+            if (idIndex(nodes, n.id) == null)
+              nodes.push({
+                id: n.id,
+                label: n.labels[0],
+                title: n.properties.name
+              });
+          });
+          links = links.concat(
+            row.graph.relationships.map(function(r) {
+              return {
+                start: idIndex(nodes, r.startNode),
+                end: idIndex(nodes, r.endNode),
+                type: r.type
+              };
+            })
+          );
+          viz = { nodes: nodes, links: links };
         })
         .catch(err => {
           console.error(err);
         });
 
-      const w = 600;
-      const h = 600;
+      const w = 900;
+      const h = 800;
 
-      let nodes = [
-        { name: "桂林" },
-        { name: "广州" },
-        { name: "厦门" },
-        { name: "杭州" },
-        { name: "上海" },
-        { name: "青岛" },
-        { name: "天津" }
-      ];
+      // let nodes = [
+      //   { name: "桂林" },
+      //   { name: "广州" },
+      //   { name: "厦门" },
+      //   { name: "杭州" },
+      //   { name: "上海" },
+      //   { name: "青岛" },
+      //   { name: "天津" }
+      // ];
 
-      let links = [
-        { source: 0, target: 1 },
-        { source: 0, target: 2 },
-        { source: 0, target: 3 },
-        { source: 1, target: 4 },
-        { source: 1, target: 5 },
-        { source: 1, target: 6 }
-      ];
+      // let links = [
+      //   { source: 0, target: 1 },
+      //   { source: 0, target: 2 },
+      //   { source: 0, target: 3 },
+      //   { source: 1, target: 4 },
+      //   { source: 1, target: 5 },
+      //   { source: 1, target: 6 }
+      // ];
 
       let force = d3
         .forceSimulation(nodes)
@@ -367,7 +456,7 @@ export default {
         .data(nodes)
         .enter()
         .append("circle")
-        .attr("r", 20)
+        .attr("r", 40)
         .style("fill", function(d, i) {
           return color(i);
         })
