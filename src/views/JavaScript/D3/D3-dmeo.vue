@@ -289,6 +289,17 @@ export default {
         });
     },
     Force() {
+      this.$axios
+        .post("http://111.231.144.200:6066/rest/appleyk/question/nlpquery", {
+          text: "张曼玉的电影"
+        })
+        .then(res => {
+          console.log(res);
+        })
+        .catch(err => {
+          console.error(err);
+        });
+
       const w = 600;
       const h = 600;
 
