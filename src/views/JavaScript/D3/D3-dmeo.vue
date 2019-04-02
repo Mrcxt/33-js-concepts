@@ -1,6 +1,9 @@
 <template>
   <div id="d3_demo">
-    <p>131231231</p>
+    <el-input placeholder="请输入内容" v-model="searchText" @keydown.enter="Force">
+      <el-button slot="append" icon="el-icon-search" @click="Force"></el-button>
+    </el-input>
+    <!-- <p>131231231</p>
     <p>131231231</p>
     <p>131231231</p>
     <svg>
@@ -12,8 +15,7 @@
       <ellipse cx="75" cy="75" rx="20" ry="5" />
       <line x1="10" x2="50" y1="110" y2="150" />
       <polygon points="50 160, 55 180, 70 180, 60 190, 65 205, 50 195, 35 205, 40 190, 30 180, 45 180" />
-      <!-- <path d="M 20 230 Q 40 205, 50 230 T 90230" /> -->
-    </svg>
+    </svg> -->
 
   </div>
 </template>
@@ -22,7 +24,9 @@
 import * as d3 from "d3";
 export default {
   data() {
-    return {};
+    return {
+      searchText: ""
+    };
   },
   mounted() {
     // this.init1();
@@ -289,101 +293,21 @@ export default {
         });
     },
     async Force() {
-      //
-      function formatString(string) {
-        let s = string
-          .replace(/\\ /g, "null")
-          .replace(/\\N/g, "null")
-          .replace(/\\n/g, "\\n")
-          .replace(/\\'/g, "\\'")
-          .replace(/\\"/g, '\\"')
-          .replace(/\\&/g, "\\&")
-          .replace(/\\r/g, "\\r")
-          .replace(/\\t/g, "\\t")
-          .replace(/\\b/g, "\\b")
-          .replace(/\\f/g, "\\f")
-          .replace(/[\u0000-\u0019]+/g, "");
-        let o = JSON.parse(s);
-        return o;
-      }
-
-      //
-
-      function idIndex(a, id) {
-        for (var i = 0; i < a.length; i++) {
-          if (a[i].id == id) return i;
-        }
-        return null;
-      }
       let nodes = [],
         links = [];
-      // res.data.forEach(function(row) {
-      //   row.graph.nodes.forEach(function(n) {
-      //     if (idIndex(nodes, n.id) == null)
-      //       nodes.push({
-      //         id: n.id,
-      //         label: n.labels[0],
-      //         title: n.properties.name
-      //       });
-      //   });
-      //   links = links.concat(
-      //     row.graph.relationships.map(function(r) {
-      //       return {
-      //         start: idIndex(nodes, r.startNode),
-      //         end: idIndex(nodes, r.endNode),
-      //         type: r.type
-      //       };
-      //     })
-      //   );
-      // });
-      // viz = { nodes: nodes, links: links };
-
-      // let nodes = [],
-      //   links = [];
-
+      // let url = "http://111.231.144.200/kg/rest/appleyk/question/nlpquery";
+      let url = "http://192.168.181.140:8080/kgrest/query";
+      let params = {
+        text: "张曼玉的电影"
+      };
       await this.$axios
-        .post("http://111.231.144.200/kg/rest/appleyk/question/nlpquery", {
-          text: "张曼玉的电影"
-        })
+        .post(url, params)
         .then(res => {
           console.log(res);
-          let forceData = formatString(res.data.graph);
-          console.log(forceData);
-          // console.log(JSON.stringify(forceData));
-          // nodes = forceData.nodes;
-          // links = forceData.links;
+          let forceData = res.data.graph;
 
-          // forceData.links.forEach(function(e) {
-          //   // Get the source and target nodes
-          //   var sourceNode = forceData.nodes.filter(function(n) {
-          //       return n.id === e.source;
-          //     })[0],
-          //     targetNode = forceData.nodes.filter(function(n) {
-          //       return n.id === e.target;
-          //     })[0];
-
-          //   // Add the edge to the array
-          //   links.push({ source: sourceNode, target: targetNode });
-          // });
-
-          forceData.nodes.forEach(function(n) {
-            if (idIndex(nodes, n.id) == null)
-              nodes.push({
-                id: n.id,
-                label: n.labels[0],
-                title: n.properties.name
-              });
-          });
-          links = links.concat(
-            row.graph.relationships.map(function(r) {
-              return {
-                start: idIndex(nodes, r.startNode),
-                end: idIndex(nodes, r.endNode),
-                type: r.type
-              };
-            })
-          );
-          viz = { nodes: nodes, links: links };
+          nodes = forceData.nodes; //节点信息
+          links = forceData.links;
         })
         .catch(err => {
           console.error(err);
@@ -391,55 +315,39 @@ export default {
 
       const w = 900;
       const h = 800;
-
-      // let nodes = [
-      //   { name: "桂林" },
-      //   { name: "广州" },
-      //   { name: "厦门" },
-      //   { name: "杭州" },
-      //   { name: "上海" },
-      //   { name: "青岛" },
-      //   { name: "天津" }
-      // ];
-
-      // let links = [
-      //   { source: 0, target: 1 },
-      //   { source: 0, target: 2 },
-      //   { source: 0, target: 3 },
-      //   { source: 1, target: 4 },
-      //   { source: 1, target: 5 },
-      //   { source: 1, target: 6 }
-      // ];
-
-      let force = d3
-        .forceSimulation(nodes)
-        .force("link", d3.forceLink(links))
-        .force("charge", d3.forceManyBody().strength(-100))
-        .force("center", d3.forceCenter());
-
-      force
-        .force("link")
-        .links(links)
-        .distance(function(d) {
-          //每一边的长度
-          return 200;
-        });
-      //设置图形的中心位置
-      force
-        .force("center")
-        .x(w / 2)
-        .y(h / 2);
-
-      console.log(nodes);
-      console.log(links);
+      const cr = 20;
+      const linkr = 150;
 
       let svg = d3
         .select("#d3_demo")
         .append("svg")
         .attr("width", w)
         .attr("height", h);
-      //
 
+      // 力导向布局
+      let force = d3
+        .forceSimulation(nodes)
+        .force(
+          "link",
+          d3
+            .forceLink(links)
+            .distance(function(d) {
+              //每一边的长度
+              return linkr;
+            })
+            .id(function(d) {
+              return d.id;
+            })
+        )
+        .force("charge", d3.forceManyBody().strength(-100))
+        .force("center", d3.forceCenter(w / 2, h / 2))
+        .force("collide", d3.forceCollide(cr * 1.1).strength(0.5))
+        .on("tick", tick);
+
+      // console.log(nodes);
+      // console.log(links);
+
+      // 线数据
       let svg_links = svg
         .selectAll("line")
         .data(links)
@@ -448,15 +356,18 @@ export default {
         .style("stroke", "#ccc")
         .style("stroke-width", 1);
 
-      let color = d3.scaleOrdinal(d3.schemeCategory10);
+      svg_links.on("click", function(d, i) {
+        console.log(d);
+      });
 
-      //添加节点
+      //节点数据
+      let color = d3.scaleOrdinal(d3.schemeCategory10);
       let svg_nodes = svg
         .selectAll("circle")
         .data(nodes)
         .enter()
         .append("circle")
-        .attr("r", 40)
+        .attr("r", cr)
         .style("fill", function(d, i) {
           return color(i);
         })
@@ -499,13 +410,21 @@ export default {
         .enter()
         .append("text")
         .style("fill", "black")
-        .attr("dx", 20)
-        .attr("dy", 8)
-        .text(function(d) {
-          return d.name;
+        .attr("x", function(d, i) {
+          return d.x;
+        })
+        .attr("y", function(d, i) {
+          return d.y;
+        })
+        .text(function(d, i) {
+          if (i === 0) {
+            return d.name;
+          } else {
+            return d.title;
+          }
         });
 
-      force.on("tick", function() {
+      function tick() {
         //对于每一个时间间隔
         //更新连线坐标
         svg_links
@@ -539,7 +458,7 @@ export default {
           .attr("y", function(d) {
             return d.y;
           });
-      });
+      }
     },
     init7() {}
   }

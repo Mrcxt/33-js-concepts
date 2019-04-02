@@ -50,6 +50,11 @@ export default new Router({
                     component: () =>
                         import ("./views/JavaScript/D3/D3-dmeo.vue")
                 }, {
+                    path: "D3-force",
+                    name: "D3-force",
+                    component: () =>
+                        import ("./views/JavaScript/D3/D3-force.vue")
+                }, {
                     path: "IDCard",
                     name: "IDCard",
                     component: () =>
