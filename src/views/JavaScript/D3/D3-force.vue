@@ -55,7 +55,7 @@ export default {
 
       const w = 900;
       const h = 800;
-      const cr = 20;
+      const cr = 25;
       const linkr = 150;
 
       let svg = d3
@@ -109,8 +109,16 @@ export default {
         .append("circle")
         .attr("r", cr)
         .style("fill", function(d, i) {
-          return color(i);
+          if (i === 0) {
+            return color(i);
+          } else {
+            return "#6DCE9E";
+          }
         })
+        .style("stroke", function(d, i) {
+          return "#60B58B";
+        })
+        .style("stroke-width", "2px")
         .call(
           d3
             .drag()
@@ -269,6 +277,10 @@ export default {
     &:hover {
       display: block;
     }
+  }
+  circle {
+    position: relative;
+    z-index: 1;
   }
 }
 </style>
